@@ -1,0 +1,11 @@
+.idea
+.DS_Store
+
+# Enviroment file
+.env
+
+# Configs directory
+configs
+
+# Logs directory
+logs
