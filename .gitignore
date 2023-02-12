@@ -5,7 +5,7 @@
 .env
 
 # Configs directory
-configs
+/configs
 
 # Logs directory
-logs
+/logs
