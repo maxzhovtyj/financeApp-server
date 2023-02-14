@@ -1,44 +1,32 @@
 package app
 
 import (
-	"fmt"
 	"github.com/maxzhovtyj/financeApp-server/internal/config"
 	delivery "github.com/maxzhovtyj/financeApp-server/internal/delivery/http"
 	"github.com/maxzhovtyj/financeApp-server/internal/repository"
+	"github.com/maxzhovtyj/financeApp-server/internal/server"
 	"github.com/maxzhovtyj/financeApp-server/internal/service"
 	"github.com/maxzhovtyj/financeApp-server/pkg/db/mongodb"
-	"log"
+	"github.com/maxzhovtyj/financeApp-server/pkg/logger"
 )
 
 func Run() {
 	// Init configs
 	cfg, err := config.Init()
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
-	fmt.Println(cfg.Mongo)
-
 	// Init mongo client
-	dbClient := mongodb.New()
+	dbClient := mongodb.New(cfg.Mongo)
 
-	// Init repository
-	repo := repository.New(dbClient.Database(""))
-
-	// Init services
+	// Init repository, services and handlers
+	repo := repository.New(dbClient.Database(cfg.Mongo.Database))
 	s := service.New(repo)
-
-	// Init handlers
 	h := delivery.New(s)
 
-	echo := h.Init()
-
-	echo.Server.WriteTimeout = cfg.HTTP.WriteTimeout
-	echo.Server.ReadTimeout = cfg.HTTP.ReadTimeout
-	echo.Server.MaxHeaderBytes = cfg.HTTP.MaxHeaderMegabytes << 20
-
-	// Run application
-	if err = echo.Start(":" + cfg.HTTP.Port); err != nil {
-		log.Fatal(err)
+	srv := server.NewServer(cfg, h.Init())
+	if err = srv.Run(); err != nil {
+		logger.Fatal(err)
 	}
 }

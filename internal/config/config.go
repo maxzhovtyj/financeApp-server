@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/joho/godotenv"
-	"github.com/labstack/gommon/log"
+	"github.com/maxzhovtyj/financeApp-server/pkg/logger"
 	"github.com/spf13/viper"
 	"os"
 	"time"
@@ -54,15 +54,15 @@ type (
 func Init() (*Config, error) {
 	var cfg Config
 
-	log.Info("loading configuration file...")
+	logger.Info("loading configuration file...")
 	if err := parseConfigFile(); err != nil {
 		return nil, err
 	}
 
-	log.Info("initialize config from env file...")
+	logger.Info("initialize config from env file...")
 	setFromEnv(&cfg)
 
-	log.Info("unmarshalling config file...")
+	logger.Info("unmarshalling config file...")
 	if err := unmarshalConfig(&cfg); err != nil {
 		return nil, err
 	}
@@ -105,7 +105,7 @@ func parseConfigFile() error {
 
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		logger.Fatal("Error loading .env file")
 	}
 
 	return nil

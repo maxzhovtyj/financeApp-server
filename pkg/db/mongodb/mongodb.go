@@ -3,35 +3,36 @@ package mongodb
 import (
 	"context"
 	"fmt"
+	"github.com/maxzhovtyj/financeApp-server/internal/config"
+	"github.com/maxzhovtyj/financeApp-server/pkg/logger"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
 	"time"
 )
 
-func New() *mongo.Client {
+func New(cfg config.MongoConfig) *mongo.Client {
 	ctx, cancelFunc := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancelFunc()
 
-	dsn := fmt.Sprintf("mongodb://localhost:2717")
+	dsn := fmt.Sprintf(cfg.URI)
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(dsn).SetAuth(options.Credential{
-		Username: "admin",
-		Password: "30042003",
+		Username: cfg.User,
+		Password: cfg.Password,
 	}))
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	defer func() {
 		if err = client.Disconnect(ctx); err != nil {
-			panic(err)
+			logger.Panic(err)
 		}
 	}()
 
 	err = client.Ping(context.Background(), nil)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	return client
