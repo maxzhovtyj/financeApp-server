@@ -24,12 +24,6 @@ func New(cfg config.MongoConfig) *mongo.Client {
 		logger.Fatal(err)
 	}
 
-	defer func() {
-		if err = client.Disconnect(ctx); err != nil {
-			logger.Panic(err)
-		}
-	}()
-
 	err = client.Ping(context.Background(), nil)
 	if err != nil {
 		logger.Fatal(err)

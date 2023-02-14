@@ -1,8 +1,13 @@
 package repository
 
-import "go.mongodb.org/mongo-driver/mongo"
+import (
+	"github.com/maxzhovtyj/financeApp-server/internal/models"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+)
 
 type Users interface {
+	SignUp(user models.User) (primitive.ObjectID, error)
 }
 
 type Repository struct {
