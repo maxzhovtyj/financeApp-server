@@ -7,6 +7,7 @@ import (
 )
 
 type Users interface {
+	GetUser(email string) (models.User, error)
 	SignUp(user models.User) (primitive.ObjectID, error)
 }
 

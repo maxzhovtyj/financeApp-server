@@ -24,3 +24,19 @@ func (r *UsersRepo) SignUp(user models.User) (primitive.ObjectID, error) {
 
 	return one.InsertedID.(primitive.ObjectID), nil
 }
+
+func (r *UsersRepo) GetUser(email string) (models.User, error) {
+	var user models.User
+
+	res := r.db.FindOne(context.Background(), email)
+	if res.Err() != nil {
+		return models.User{}, res.Err()
+	}
+
+	err := res.Decode(&user)
+	if err != nil {
+		return models.User{}, err
+	}
+
+	return user, nil
+}

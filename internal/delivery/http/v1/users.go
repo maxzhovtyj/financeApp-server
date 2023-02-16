@@ -7,6 +7,11 @@ import (
 	"net/http"
 )
 
+type signInUserInput struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 func (h *Handler) initUsersRoutes(group *echo.Group) {
 	users := group.Group("/users")
 	{
@@ -28,4 +33,23 @@ func (h *Handler) signUp(ctx echo.Context) error {
 	}
 
 	return ctx.String(http.StatusOK, id.String())
+}
+
+func (h *Handler) signIn(ctx echo.Context) error {
+	var input signInUserInput
+
+	if err := ctx.Bind(&input); err != nil {
+		return err
+	}
+
+	accessToken, refreshToken, err := h.service.Users.SignIn(input.Email, input.Password)
+	if err != nil {
+		logger.Error(err)
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]any{
+		"accessToken":  accessToken,
+		"refreshToken": refreshToken,
+	})
 }
