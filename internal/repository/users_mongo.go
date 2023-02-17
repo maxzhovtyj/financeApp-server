@@ -19,7 +19,6 @@ func NewUsersRepo(db *mongo.Database) *UsersRepo {
 }
 
 func (r *UsersRepo) Create(ctx context.Context, user models.User) (primitive.ObjectID, error) {
-	// TODO duplicates users cannot be inserted
 	one, err := r.db.InsertOne(ctx, user)
 	if mongodb.IsDuplicate(err) {
 		return [12]byte{}, models.ErrUserAlreadyExists

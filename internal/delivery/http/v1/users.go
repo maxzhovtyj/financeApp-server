@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"errors"
 	"github.com/labstack/echo/v4"
 	"github.com/maxzhovtyj/financeApp-server/internal/models"
 	"github.com/maxzhovtyj/financeApp-server/pkg/logger"
@@ -37,11 +38,17 @@ func (h *Handler) signUp(ctx echo.Context) error {
 	id, err := h.service.Users.SignUp(ctx.Request().Context(), input)
 	if err != nil {
 		logger.Error(err)
+
+		if errors.Is(err, models.ErrUserAlreadyExists) {
+			newErrorResponse(ctx, http.StatusBadRequest, err.Error())
+			return err
+		}
+
 		newErrorResponse(ctx, http.StatusInternalServerError, err.Error())
 		return err
 	}
 
-	return ctx.String(http.StatusOK, id.String())
+	return ctx.String(http.StatusOK, id.Hex())
 }
 
 func (h *Handler) signIn(ctx echo.Context) error {
@@ -56,6 +63,10 @@ func (h *Handler) signIn(ctx echo.Context) error {
 	accessToken, refreshToken, err := h.service.Users.SignIn(ctx.Request().Context(), input.Email, input.Password)
 	if err != nil {
 		logger.Error(err)
+		if errors.Is(err, models.ErrUserNotFound) {
+			newErrorResponse(ctx, http.StatusBadRequest, err.Error())
+			return err
+		}
 		newErrorResponse(ctx, http.StatusInternalServerError, err.Error())
 		return err
 	}

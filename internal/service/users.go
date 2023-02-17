@@ -43,6 +43,10 @@ func (s *UserService) SignUp(ctx context.Context, user models.User) (id primitiv
 
 	id, err = s.repo.Create(ctx, user)
 	if err != nil {
+		if errors.Is(err, models.ErrUserAlreadyExists) {
+			return [12]byte{}, err
+		}
+
 		return [12]byte{}, err
 	}
 
