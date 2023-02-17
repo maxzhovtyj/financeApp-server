@@ -2,6 +2,7 @@ package mongodb
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/maxzhovtyj/financeApp-server/internal/config"
 	"github.com/maxzhovtyj/financeApp-server/pkg/logger"
@@ -30,4 +31,17 @@ func New(cfg config.MongoConfig) *mongo.Client {
 	}
 
 	return client
+}
+
+func IsDuplicate(err error) bool {
+	var e mongo.WriteException
+	if errors.As(err, &e) {
+		for _, we := range e.WriteErrors {
+			if we.Code == 11000 {
+				return true
+			}
+		}
+	}
+
+	return false
 }

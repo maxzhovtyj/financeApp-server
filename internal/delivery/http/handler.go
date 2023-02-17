@@ -1,6 +1,7 @@
 package delivery
 
 import (
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	v1 "github.com/maxzhovtyj/financeApp-server/internal/delivery/http/v1"
@@ -8,7 +9,8 @@ import (
 )
 
 type Handler struct {
-	service *service.Service
+	service   *service.Service
+	validator AppValidator
 }
 
 func New(service *service.Service) *Handler {
@@ -19,6 +21,9 @@ func (h *Handler) Init() *echo.Echo {
 	router := echo.New()
 
 	router.Use(middleware.Recover())
+
+	v := validator.New()
+	router.Validator = &AppValidator{validator: v}
 
 	h.initAPI(router)
 

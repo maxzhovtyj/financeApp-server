@@ -1,10 +1,12 @@
 package service
 
 import (
-	"fmt"
+	"context"
+	"errors"
 	"github.com/maxzhovtyj/financeApp-server/internal/models"
 	"github.com/maxzhovtyj/financeApp-server/internal/repository"
 	"github.com/maxzhovtyj/financeApp-server/pkg/auth"
+	"github.com/maxzhovtyj/financeApp-server/pkg/hash"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 )
@@ -15,29 +17,52 @@ type UserService struct {
 
 	accessTokenTTL  time.Duration
 	refreshTokenTTL time.Duration
+
+	hashing hash.PasswordHashing
 }
 
-func NewUsersService(repo repository.Users, tokenManager auth.TokenManager, accessTokenTTL, refreshTokenTTL time.Duration) Users {
+func NewUsersService(
+	repo repository.Users,
+	tokenManager auth.TokenManager,
+	accessTokenTTL, refreshTokenTTL time.Duration,
+	hashing hash.PasswordHashing) Users {
 	return &UserService{
 		repo:            repo,
 		tokenManager:    tokenManager,
 		accessTokenTTL:  accessTokenTTL,
 		refreshTokenTTL: refreshTokenTTL,
+		hashing:         hashing,
 	}
 }
 
-func (s *UserService) SignUp(user models.User) (primitive.ObjectID, error) {
-	return s.repo.SignUp(user)
+func (s *UserService) SignUp(ctx context.Context, user models.User) (id primitive.ObjectID, err error) {
+	user.Password, err = s.hashing.Hash(user.Password)
+	if err != nil {
+		return [12]byte{}, err
+	}
+
+	id, err = s.repo.Create(ctx, user)
+	if err != nil {
+		return [12]byte{}, err
+	}
+
+	return id, err
 }
 
-func (s *UserService) SignIn(email, password string) (string, string, error) {
-	user, err := s.repo.GetUser(email)
+func (s *UserService) SignIn(ctx context.Context, email, password string) (string, string, error) {
+	passwordHash, err := s.hashing.Hash(password)
 	if err != nil {
 		return "", "", err
 	}
 
-	// TODO check whether passwords are the same
-	fmt.Println(password)
+	user, err := s.repo.GetByCredentials(ctx, email, passwordHash)
+	if err != nil {
+		if errors.Is(err, models.ErrUserNotFound) {
+			return "", "", err
+		}
+
+		return "", "", err
+	}
 
 	accessToken, err := s.tokenManager.NewJWT(user.Id.String(), s.accessTokenTTL)
 	if err != nil {
