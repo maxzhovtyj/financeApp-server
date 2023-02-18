@@ -6,12 +6,13 @@ import (
 	"github.com/maxzhovtyj/financeApp-server/internal/repository"
 	"github.com/maxzhovtyj/financeApp-server/pkg/auth"
 	"github.com/maxzhovtyj/financeApp-server/pkg/hash"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 )
 
+//go:generate mockgen -source=service.go -destination=mocks/mock.go
+
 type Users interface {
-	SignUp(ctx context.Context, user models.User) (primitive.ObjectID, error)
+	SignUp(ctx context.Context, user models.User) error
 	SignIn(ctx context.Context, email, password string) (string, string, error)
 }
 

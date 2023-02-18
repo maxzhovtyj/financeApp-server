@@ -3,12 +3,11 @@ package repository
 import (
 	"context"
 	"github.com/maxzhovtyj/financeApp-server/internal/models"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type Users interface {
-	Create(ctx context.Context, user models.User) (primitive.ObjectID, error)
+	Create(ctx context.Context, user models.User) error
 	GetByCredentials(ctx context.Context, email, password string) (models.User, error)
 }
 

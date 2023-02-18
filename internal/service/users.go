@@ -7,7 +7,6 @@ import (
 	"github.com/maxzhovtyj/financeApp-server/internal/repository"
 	"github.com/maxzhovtyj/financeApp-server/pkg/auth"
 	"github.com/maxzhovtyj/financeApp-server/pkg/hash"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 )
 
@@ -35,22 +34,22 @@ func NewUsersService(
 	}
 }
 
-func (s *UserService) SignUp(ctx context.Context, user models.User) (id primitive.ObjectID, err error) {
+func (s *UserService) SignUp(ctx context.Context, user models.User) (err error) {
 	user.Password, err = s.hashing.Hash(user.Password)
 	if err != nil {
-		return [12]byte{}, err
+		return err
 	}
 
-	id, err = s.repo.Create(ctx, user)
+	err = s.repo.Create(ctx, user)
 	if err != nil {
 		if errors.Is(err, models.ErrUserAlreadyExists) {
-			return [12]byte{}, err
+			return err
 		}
 
-		return [12]byte{}, err
+		return err
 	}
 
-	return id, err
+	return nil
 }
 
 func (s *UserService) SignIn(ctx context.Context, email, password string) (string, string, error) {

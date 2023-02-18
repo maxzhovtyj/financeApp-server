@@ -6,7 +6,6 @@ import (
 	"github.com/maxzhovtyj/financeApp-server/internal/models"
 	"github.com/maxzhovtyj/financeApp-server/pkg/db/mongodb"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -18,13 +17,13 @@ func NewUsersRepo(db *mongo.Database) *UsersRepo {
 	return &UsersRepo{db: db.Collection(userCollection)}
 }
 
-func (r *UsersRepo) Create(ctx context.Context, user models.User) (primitive.ObjectID, error) {
-	one, err := r.db.InsertOne(ctx, user)
+func (r *UsersRepo) Create(ctx context.Context, user models.User) error {
+	_, err := r.db.InsertOne(ctx, user)
 	if mongodb.IsDuplicate(err) {
-		return [12]byte{}, models.ErrUserAlreadyExists
+		return models.ErrUserAlreadyExists
 	}
 
-	return one.InsertedID.(primitive.ObjectID), err
+	return err
 }
 
 func (r *UsersRepo) GetByCredentials(ctx context.Context, email, password string) (models.User, error) {

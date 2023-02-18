@@ -8,6 +8,8 @@ import (
 	"net/http"
 )
 
+const signUpUrl = "/sign-up"
+
 type signInUserInput struct {
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
@@ -16,7 +18,7 @@ type signInUserInput struct {
 func (h *Handler) initUsersRoutes(group *echo.Group) {
 	users := group.Group("/users")
 	{
-		users.POST("/sign-up", h.signUp)
+		users.POST(signUpUrl, h.signUp)
 		users.POST("/sign-in", h.signIn)
 	}
 }
@@ -35,7 +37,7 @@ func (h *Handler) signUp(ctx echo.Context) error {
 		return err
 	}
 
-	id, err := h.service.Users.SignUp(ctx.Request().Context(), input)
+	err = h.service.Users.SignUp(ctx.Request().Context(), input)
 	if err != nil {
 		logger.Error(err)
 
@@ -48,7 +50,7 @@ func (h *Handler) signUp(ctx echo.Context) error {
 		return err
 	}
 
-	return ctx.String(http.StatusOK, id.Hex())
+	return ctx.NoContent(http.StatusCreated)
 }
 
 func (h *Handler) signIn(ctx echo.Context) error {
