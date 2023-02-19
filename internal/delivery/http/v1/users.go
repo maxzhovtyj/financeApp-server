@@ -10,8 +10,8 @@ import (
 const signUpUrl = "/sign-up"
 
 type signInUserInput struct {
-	Email    string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Email    string `json:"email" validate:"required"`
+	Password string `json:"password" validate:"required"`
 }
 
 func (h *Handler) initUsersRoutes(group *echo.Group) {
@@ -54,6 +54,10 @@ func (h *Handler) signIn(ctx echo.Context) error {
 	var input signInUserInput
 
 	if err := ctx.Bind(&input); err != nil {
+		return newErrorResponse(ctx, http.StatusBadRequest, models.ErrInvalidInputBody)
+	}
+
+	if err := ctx.Validate(&input); err != nil {
 		return newErrorResponse(ctx, http.StatusBadRequest, models.ErrInvalidInputBody)
 	}
 

@@ -2,10 +2,20 @@ POST http://localhost:4321/api/v1/users/sign-up
 Content-Type: application/json
 
 {
-  "firstName": "213123",
-  "lastName": "321312",
-  "email": "test@test.com",
-  "password": "qwer"
+  "firstName": "test",
+  "lastName": "test",
+  "email": "test@gmail.com",
+  "password": "qwerty123"
+}
+
+###
+
+POST http://localhost:4321/api/v1/users/sign-in
+Content-Type: application/json
+
+{
+  "email": "test@gmail.com",
+  "password": "qwerty123"
 }
 
 ###
