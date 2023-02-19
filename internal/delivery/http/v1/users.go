@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/labstack/echo/v4"
 	"github.com/maxzhovtyj/financeApp-server/internal/models"
-	"github.com/maxzhovtyj/financeApp-server/pkg/logger"
 	"net/http"
 )
 
@@ -27,27 +26,25 @@ func (h *Handler) signUp(ctx echo.Context) error {
 	var input models.User
 
 	if err := ctx.Bind(&input); err != nil {
-		logger.Error(err)
-		newErrorResponse(ctx, http.StatusBadRequest, err.Error())
-		return err
+		return newErrorResponse(ctx, http.StatusBadRequest, models.ErrInvalidInputBody)
 	}
 
 	err := ctx.Validate(&input)
 	if err != nil {
-		return err
+		return newErrorResponse(ctx, http.StatusBadRequest, models.ErrInvalidInputBody)
+	}
+
+	if len(input.Password) < 8 {
+		return newErrorResponse(ctx, http.StatusBadRequest, models.ErrInvalidInputBody)
 	}
 
 	err = h.service.Users.SignUp(ctx.Request().Context(), input)
 	if err != nil {
-		logger.Error(err)
-
 		if errors.Is(err, models.ErrUserAlreadyExists) {
-			newErrorResponse(ctx, http.StatusBadRequest, err.Error())
-			return err
+			return newErrorResponse(ctx, http.StatusBadRequest, models.ErrUserAlreadyExists)
 		}
 
-		newErrorResponse(ctx, http.StatusInternalServerError, err.Error())
-		return err
+		return newErrorResponse(ctx, http.StatusInternalServerError, err)
 	}
 
 	return ctx.NoContent(http.StatusCreated)
@@ -57,20 +54,16 @@ func (h *Handler) signIn(ctx echo.Context) error {
 	var input signInUserInput
 
 	if err := ctx.Bind(&input); err != nil {
-		logger.Error(err)
-		newErrorResponse(ctx, http.StatusBadRequest, err.Error())
-		return err
+		return newErrorResponse(ctx, http.StatusBadRequest, models.ErrInvalidInputBody)
 	}
 
 	accessToken, refreshToken, err := h.service.Users.SignIn(ctx.Request().Context(), input.Email, input.Password)
 	if err != nil {
-		logger.Error(err)
 		if errors.Is(err, models.ErrUserNotFound) {
-			newErrorResponse(ctx, http.StatusBadRequest, err.Error())
-			return err
+			return newErrorResponse(ctx, http.StatusBadRequest, models.ErrUserNotFound)
 		}
-		newErrorResponse(ctx, http.StatusInternalServerError, err.Error())
-		return err
+
+		return newErrorResponse(ctx, http.StatusInternalServerError, err)
 	}
 
 	return ctx.JSON(http.StatusOK, map[string]any{

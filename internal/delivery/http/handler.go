@@ -10,7 +10,7 @@ import (
 
 type Handler struct {
 	service   *service.Service
-	validator AppValidator
+	validator v1.AppValidator
 }
 
 func New(service *service.Service) *Handler {
@@ -20,10 +20,11 @@ func New(service *service.Service) *Handler {
 func (h *Handler) Init() *echo.Echo {
 	router := echo.New()
 
+	router.Use(middleware.Logger())
 	router.Use(middleware.Recover())
 
 	v := validator.New()
-	router.Validator = &AppValidator{validator: v}
+	router.Validator = &v1.AppValidator{Validator: v}
 
 	h.initAPI(router)
 

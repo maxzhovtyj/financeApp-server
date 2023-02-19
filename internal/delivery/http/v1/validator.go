@@ -1,4 +1,4 @@
-package delivery
+package v1
 
 import (
 	"github.com/go-playground/validator/v10"
@@ -7,11 +7,11 @@ import (
 )
 
 type AppValidator struct {
-	validator *validator.Validate
+	Validator *validator.Validate
 }
 
 func (av *AppValidator) Validate(i interface{}) error {
-	if err := av.validator.Struct(i); err != nil {
+	if err := av.Validator.Struct(i); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
