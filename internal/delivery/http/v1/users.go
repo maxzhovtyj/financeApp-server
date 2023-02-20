@@ -7,7 +7,8 @@ import (
 	"net/http"
 )
 
-const signUpUrl = "/sign-up"
+const usersSignUpUrl = "/sign-up"
+const usersSignInUrl = "/sign-in"
 
 type signInUserInput struct {
 	Email    string `json:"email" validate:"required"`
@@ -17,28 +18,19 @@ type signInUserInput struct {
 func (h *Handler) initUsersRoutes(group *echo.Group) {
 	users := group.Group("/users")
 	{
-		users.POST(signUpUrl, h.signUp)
-		users.POST("/sign-in", h.signIn)
+		users.POST(usersSignUpUrl, h.signUp)
+		users.POST(usersSignInUrl, h.signIn)
 	}
 }
 
 func (h *Handler) signUp(ctx echo.Context) error {
 	var input models.User
 
-	if err := ctx.Bind(&input); err != nil {
+	if err := BindAndValidate(ctx, &input); err != nil {
 		return newErrorResponse(ctx, http.StatusBadRequest, models.ErrInvalidInputBody)
 	}
 
-	err := ctx.Validate(&input)
-	if err != nil {
-		return newErrorResponse(ctx, http.StatusBadRequest, models.ErrInvalidInputBody)
-	}
-
-	if len(input.Password) < 8 {
-		return newErrorResponse(ctx, http.StatusBadRequest, models.ErrInvalidInputBody)
-	}
-
-	err = h.service.Users.SignUp(ctx.Request().Context(), input)
+	err := h.service.Users.SignUp(ctx.Request().Context(), input)
 	if err != nil {
 		if errors.Is(err, models.ErrUserAlreadyExists) {
 			return newErrorResponse(ctx, http.StatusBadRequest, models.ErrUserAlreadyExists)
@@ -53,11 +45,7 @@ func (h *Handler) signUp(ctx echo.Context) error {
 func (h *Handler) signIn(ctx echo.Context) error {
 	var input signInUserInput
 
-	if err := ctx.Bind(&input); err != nil {
-		return newErrorResponse(ctx, http.StatusBadRequest, models.ErrInvalidInputBody)
-	}
-
-	if err := ctx.Validate(&input); err != nil {
+	if err := BindAndValidate(ctx, &input); err != nil {
 		return newErrorResponse(ctx, http.StatusBadRequest, models.ErrInvalidInputBody)
 	}
 

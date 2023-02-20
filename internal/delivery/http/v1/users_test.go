@@ -60,7 +60,7 @@ func TestHandler_signUp(t *testing.T) {
 		},
 		{
 			name:                 "Invalid user password length",
-			requestBody:          `{"firstName":"test","lastName":"test","email":"test@test.com","password":"123"}`,
+			requestBody:          `{"firstName":"test","lastName":"test","email":"test@gmail.com","password":"123"}`,
 			mockBehavior:         func(r *mock_service.MockUsers, input models.User) {},
 			expectedStatusCode:   http.StatusBadRequest,
 			expectedResponseBody: models.ErrInvalidInputBody.Error(),
@@ -131,13 +131,13 @@ func TestHandler_signUp(t *testing.T) {
 
 			router := echo.New()
 
-			router.GET("/sign-up", handler.signUp)
+			router.GET(usersSignUpUrl, handler.signUp)
 
 			v := validator.New()
 			router.Validator = &AppValidator{Validator: v}
 
 			w := httptest.NewRecorder()
-			r := httptest.NewRequest(http.MethodGet, "/sign-up", bytes.NewBufferString(testCase.requestBody))
+			r := httptest.NewRequest(http.MethodGet, usersSignUpUrl, bytes.NewBufferString(testCase.requestBody))
 			r.Header.Set("Content-Type", "application/json")
 			r.Header.Set("Accept", "application/json")
 
@@ -253,20 +253,17 @@ func TestHandler_signIn(t *testing.T) {
 
 			router := echo.New()
 
-			router.GET("/sign-in", handler.signIn)
+			router.GET(usersSignUpUrl, handler.signIn)
 
 			v := validator.New()
 			router.Validator = &AppValidator{Validator: v}
 
 			w := httptest.NewRecorder()
-			r := httptest.NewRequest(http.MethodGet, "/sign-in", bytes.NewBufferString(testCase.requestBody))
+			r := httptest.NewRequest(http.MethodGet, usersSignUpUrl, bytes.NewBufferString(testCase.requestBody))
 			r.Header.Set("Content-Type", "application/json")
 			r.Header.Set("Accept", "application/json")
 
 			router.ServeHTTP(w, r)
-
-			fmt.Println(w.Body.String())
-			fmt.Println(testCase.expectedResponseBody)
 
 			assert.Equal(t, w.Code, testCase.expectedStatusCode)
 			assert.Equal(t, w.Body.String(), testCase.expectedResponseBody)
