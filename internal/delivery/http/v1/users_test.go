@@ -85,6 +85,36 @@ func TestHandler_signUp(t *testing.T) {
 			expectedStatusCode:   http.StatusBadRequest,
 			expectedResponseBody: models.ErrInvalidInputBody.Error(),
 		},
+		{
+			name:        "User already exists",
+			requestBody: `{"firstName":"test","lastName":"test","email":"test@gmail.com","password":"qwerty123"}`,
+			serviceInput: models.User{
+				FirstName: "test",
+				LastName:  "test",
+				Email:     "test@gmail.com",
+				Password:  "qwerty123",
+			},
+			mockBehavior: func(r *mock_service.MockUsers, input models.User) {
+				r.EXPECT().SignUp(context.Background(), input).Return(models.ErrUserAlreadyExists)
+			},
+			expectedStatusCode:   http.StatusBadRequest,
+			expectedResponseBody: models.ErrUserAlreadyExists.Error(),
+		},
+		{
+			name:        "Some server error",
+			requestBody: `{"firstName":"test","lastName":"test","email":"test@gmail.com","password":"qwerty123"}`,
+			serviceInput: models.User{
+				FirstName: "test",
+				LastName:  "test",
+				Email:     "test@gmail.com",
+				Password:  "qwerty123",
+			},
+			mockBehavior: func(r *mock_service.MockUsers, input models.User) {
+				r.EXPECT().SignUp(context.Background(), input).Return(fmt.Errorf("some error occurred"))
+			},
+			expectedStatusCode:   http.StatusInternalServerError,
+			expectedResponseBody: fmt.Errorf("some error occurred").Error(),
+		},
 	}
 
 	for _, testCase := range testTable {
@@ -161,6 +191,52 @@ func TestHandler_signIn(t *testing.T) {
 			},
 			expectedStatusCode:   http.StatusOK,
 			expectedResponseBody: fmt.Sprintf(`{"accessToken":"%s","refreshToken":"%s"}%s`, accessToken, refreshToken, "\n"),
+		},
+		{
+			name:                 "Missing email",
+			requestBody:          `{"email":"","password":"qwerty123"}`,
+			mockBehavior:         func(r *mock_service.MockUsers, input signInServiceInput) {},
+			expectedStatusCode:   http.StatusBadRequest,
+			expectedResponseBody: models.ErrInvalidInputBody.Error(),
+		},
+		{
+			name:                 "Missing password",
+			requestBody:          `{"email":"test@gmail.com","password":""}`,
+			mockBehavior:         func(r *mock_service.MockUsers, input signInServiceInput) {},
+			expectedStatusCode:   http.StatusBadRequest,
+			expectedResponseBody: models.ErrInvalidInputBody.Error(),
+		},
+		{
+			name:        "User was not found",
+			requestBody: `{"email":"test@gmail.com","password":"qwerty123"}`,
+			mockBehavior: func(r *mock_service.MockUsers, input signInServiceInput) {
+				r.EXPECT().SignIn(context.Background(), input.Email, input.Password).Return("", "", models.ErrUserNotFound)
+			},
+			serviceInput: signInServiceInput{
+				Email:    "test@gmail.com",
+				Password: "qwerty123",
+			},
+			expectedStatusCode:   http.StatusBadRequest,
+			expectedResponseBody: models.ErrUserNotFound.Error(),
+		},
+		{
+			name:        "Some server error",
+			requestBody: `{"email":"test@gmail.com","password":"qwerty123"}`,
+			mockBehavior: func(r *mock_service.MockUsers, input signInServiceInput) {
+				r.EXPECT().SignIn(context.Background(), input.Email, input.Password).Return("", "", fmt.Errorf("error occurred"))
+			},
+			serviceInput: signInServiceInput{
+				Email:    "test@gmail.com",
+				Password: "qwerty123",
+			},
+			expectedStatusCode:   http.StatusInternalServerError,
+			expectedResponseBody: fmt.Errorf("error occurred").Error(),
+		},
+		{
+			name:                 "Empty request body",
+			mockBehavior:         func(r *mock_service.MockUsers, input signInServiceInput) {},
+			expectedStatusCode:   http.StatusBadRequest,
+			expectedResponseBody: models.ErrInvalidInputBody.Error(),
 		},
 	}
 
