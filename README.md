@@ -1,7 +1,5 @@
 ## FinanceApp REST API
 
----
-
 Create .env file in root directory with the following values:
 ```
 HTTP_HOST=localhost
