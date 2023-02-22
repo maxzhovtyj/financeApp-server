@@ -6,5 +6,6 @@ import (
 
 type Wallet struct {
 	Id         primitive.ObjectID
+	UserId     primitive.ObjectID
 	Operations []Operation
 }

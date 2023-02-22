@@ -1,3 +1,4 @@
 package repository
 
-const userCollection = "users"
+const usersCollection = "users"
+const walletsCollection = "wallets"

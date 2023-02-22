@@ -11,10 +11,17 @@ type Users interface {
 	GetByCredentials(ctx context.Context, email, password string) (models.User, error)
 }
 
+type Wallet interface {
+}
+
 type Repository struct {
-	Users Users
+	Users  Users
+	Wallet Wallet
 }
 
 func New(db *mongo.Database) *Repository {
-	return &Repository{Users: NewUsersRepo(db)}
+	return &Repository{
+		Users:  NewUsersRepo(db),
+		Wallet: NewWalletRepo(db),
+	}
 }
