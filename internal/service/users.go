@@ -24,7 +24,7 @@ func NewUsersService(
 	repo repository.Users,
 	tokenManager auth.TokenManager,
 	accessTokenTTL, refreshTokenTTL time.Duration,
-	hashing hash.PasswordHashing) Users {
+	hashing hash.PasswordHashing) *UserService {
 	return &UserService{
 		repo:            repo,
 		tokenManager:    tokenManager,
