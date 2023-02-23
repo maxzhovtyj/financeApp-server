@@ -1,16 +1,25 @@
 package v1
 
 import (
-	"context"
 	"github.com/labstack/echo/v4"
 	"github.com/maxzhovtyj/financeApp-server/internal/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 )
 
+const walletUrl = "/wallet"
+
+func (h *Handler) initWalletRoutes(group *echo.Group) {
+	wallet := group.Group(walletUrl, h.userIdentity)
+	{
+		wallet.POST("", h.newWallet)
+	}
+}
+
 type NewWalletInput struct {
-	UserId string `json:"userId"`
-	Sum    string `json:"sum"`
+	Name   string `json:"name" create:"required"`
+	UserId string `json:"userId" create:"required"`
+	Sum    string `json:"sum" create:"required"`
 }
 
 func (h *Handler) newWallet(ctx echo.Context) error {
@@ -31,11 +40,11 @@ func (h *Handler) newWallet(ctx echo.Context) error {
 		return newErrorResponse(ctx, http.StatusBadRequest, models.ErrInvalidInputBody)
 	}
 
-	err = h.service.Wallet.New(context.Background(), models.Wallet{
+	err = h.service.Wallet.New(ctx.Request().Context(), models.Wallet{
+		Name:   input.Name,
 		UserId: userOid,
 		Sum:    sumDecimal128,
 	})
-
 	if err != nil {
 		return newErrorResponse(ctx, http.StatusInternalServerError, err)
 	}

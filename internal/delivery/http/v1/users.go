@@ -7,24 +7,19 @@ import (
 	"net/http"
 )
 
-const usersSignUpUrl = "/sign-up"
-const usersSignInUrl = "/sign-in"
-
-type signInUserInput struct {
-	Email    string `json:"email" validate:"required"`
-	Password string `json:"password" validate:"required"`
-}
+const (
+	usersUrl       = "/users"
+	signUpUrl      = "/sign-up"
+	signInUrl      = "/sign-in"
+	authRefreshUrl = "/auth/refresh"
+)
 
 func (h *Handler) initUsersRoutes(group *echo.Group) {
-	users := group.Group("/users")
+	users := group.Group(usersUrl)
 	{
-		users.POST(usersSignUpUrl, h.signUp)
-		users.POST(usersSignInUrl, h.signIn)
-
-		wallet := users.Group("/wallet", h.userIdentity)
-		{
-			wallet.POST("", h.newWallet)
-		}
+		users.POST(signUpUrl, h.signUp)
+		users.POST(signInUrl, h.signIn)
+		users.POST(authRefreshUrl, h.userRefresh)
 	}
 }
 
@@ -47,6 +42,11 @@ func (h *Handler) signUp(ctx echo.Context) error {
 	return ctx.NoContent(http.StatusCreated)
 }
 
+type signInUserInput struct {
+	Email    string `json:"email" validate:"required"`
+	Password string `json:"password" validate:"required"`
+}
+
 func (h *Handler) signIn(ctx echo.Context) error {
 	var input signInUserInput
 
@@ -67,4 +67,9 @@ func (h *Handler) signIn(ctx echo.Context) error {
 		"accessToken":  accessToken,
 		"refreshToken": refreshToken,
 	})
+}
+
+func (h *Handler) userRefresh(ctx echo.Context) error {
+	// TODO
+	return newErrorResponse(ctx, http.StatusNotImplemented, errors.New("not implemented"))
 }

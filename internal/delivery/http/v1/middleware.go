@@ -31,7 +31,7 @@ func (h *Handler) userIdentity(next echo.HandlerFunc) echo.HandlerFunc {
 
 		userId, err := h.tokenManager.Parse(authHeaderParts[1])
 		if err != nil {
-			return err
+			return newErrorResponse(ctx, http.StatusUnauthorized, models.ErrInvalidAuthorizationHeader)
 		}
 
 		ctx.Set(userIdCtx, userId)

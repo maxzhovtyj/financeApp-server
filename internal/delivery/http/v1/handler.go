@@ -34,5 +34,6 @@ func (h *Handler) Init(api *echo.Group) {
 		})
 
 		h.initUsersRoutes(v1)
+		h.initWalletRoutes(v1)
 	}
 }
