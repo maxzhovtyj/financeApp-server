@@ -20,4 +20,15 @@ Content-Type: application/json
 
 ###
 
+POST http://localhost:4321/api/v1/users/wallet
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NzcxNjUwODQsInN1YiI6Ik9iamVjdElEKFwiNjNmMjg3ZjRlYzdkMjc3N2RiYzE3YjRhXCIpIn0.nNvPYs0TM5Ro23MTas_uHLoSDXqfWsBYzH30SLoxvlk
+
+{
+  "userId": "63f287f4ec7d2777dbc17b4a",
+  "sum": "1000"
+}
+
+###
+
 

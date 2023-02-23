@@ -34,7 +34,7 @@ func Run() {
 	// Init repository, services and handlers
 	repo := repository.New(dbClient.Database(cfg.Mongo.Database))
 	s := service.New(repo, tokenManager, cfg.Auth.JWT.AccessTokenTTL, cfg.Auth.JWT.RefreshTokenTTL, hashing)
-	h := delivery.New(s)
+	h := delivery.New(s, tokenManager)
 
 	// Init and run server
 	srv := server.NewServer(cfg, h.Init())

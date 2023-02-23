@@ -20,6 +20,11 @@ func (h *Handler) initUsersRoutes(group *echo.Group) {
 	{
 		users.POST(usersSignUpUrl, h.signUp)
 		users.POST(usersSignInUrl, h.signIn)
+
+		wallet := users.Group("/wallet", h.userIdentity)
+		{
+			wallet.POST("", h.newWallet)
+		}
 	}
 }
 

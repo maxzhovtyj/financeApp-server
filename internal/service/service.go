@@ -16,8 +16,13 @@ type Users interface {
 	SignIn(ctx context.Context, email, password string) (string, string, error)
 }
 
+type Wallet interface {
+	New(ctx context.Context, wallet models.Wallet) error
+}
+
 type Service struct {
-	Users Users
+	Users  Users
+	Wallet Wallet
 }
 
 func New(
@@ -26,6 +31,7 @@ func New(
 	accessTokenTTL, refreshTokenTTL time.Duration,
 	hashing hash.PasswordHashing) *Service {
 	return &Service{
-		Users: NewUsersService(repo.Users, tokenManager, accessTokenTTL, refreshTokenTTL, hashing),
+		Users:  NewUsersService(repo.Users, tokenManager, accessTokenTTL, refreshTokenTTL, hashing),
+		Wallet: NewWalletService(repo.Wallet, repo.Operation, repo.Transaction),
 	}
 }

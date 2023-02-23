@@ -1,6 +1,8 @@
 package service
 
 import (
+	"context"
+	"github.com/maxzhovtyj/financeApp-server/internal/models"
 	"github.com/maxzhovtyj/financeApp-server/internal/repository"
 )
 
@@ -10,7 +12,7 @@ type WalletService struct {
 	transaction    repository.Transaction
 }
 
-func NewWalletsService(
+func NewWalletService(
 	walletsRepo repository.Wallet,
 	operationsRepo repository.Operation,
 	transaction repository.Transaction) *WalletService {
@@ -19,4 +21,8 @@ func NewWalletsService(
 		operationsRepo: operationsRepo,
 		transaction:    transaction,
 	}
+}
+
+func (w *WalletService) New(ctx context.Context, wallet models.Wallet) error {
+	return w.walletsRepo.Create(ctx, wallet)
 }

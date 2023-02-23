@@ -6,15 +6,20 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	v1 "github.com/maxzhovtyj/financeApp-server/internal/delivery/http/v1"
 	"github.com/maxzhovtyj/financeApp-server/internal/service"
+	"github.com/maxzhovtyj/financeApp-server/pkg/auth"
 )
 
 type Handler struct {
-	service   *service.Service
-	validator v1.AppValidator
+	service      *service.Service
+	validator    v1.AppValidator
+	tokenManager auth.TokenManager
 }
 
-func New(service *service.Service) *Handler {
-	return &Handler{service: service}
+func New(service *service.Service, tokenManager auth.TokenManager) *Handler {
+	return &Handler{
+		service:      service,
+		tokenManager: tokenManager,
+	}
 }
 
 func (h *Handler) Init() *echo.Echo {
@@ -32,7 +37,7 @@ func (h *Handler) Init() *echo.Echo {
 }
 
 func (h *Handler) initAPI(router *echo.Echo) {
-	handlerV1 := v1.NewHandler(h.service)
+	handlerV1 := v1.NewHandler(h.service, h.tokenManager)
 	api := router.Group("/api")
 	{
 		handlerV1.Init(api)
