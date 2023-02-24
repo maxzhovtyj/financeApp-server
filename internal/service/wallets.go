@@ -7,22 +7,19 @@ import (
 )
 
 type WalletService struct {
-	walletsRepo    repository.Wallet
-	operationsRepo repository.Operation
-	transaction    repository.Transaction
+	walletsRepo repository.Wallet
 }
 
-func NewWalletService(
-	walletsRepo repository.Wallet,
-	operationsRepo repository.Operation,
-	transaction repository.Transaction) *WalletService {
+func NewWalletService(walletsRepo repository.Wallet) *WalletService {
 	return &WalletService{
-		walletsRepo:    walletsRepo,
-		operationsRepo: operationsRepo,
-		transaction:    transaction,
+		walletsRepo: walletsRepo,
 	}
 }
 
 func (w *WalletService) New(ctx context.Context, wallet models.Wallet) error {
 	return w.walletsRepo.Create(ctx, wallet)
+}
+
+func (w *WalletService) NewOperation(ctx context.Context, operation models.Operation) error {
+	return w.walletsRepo.NewOperation(ctx, operation)
 }

@@ -22,14 +22,25 @@ Content-Type: application/json
 
 POST http://localhost:4321/api/v1/wallet
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NzcxNzQ5NDgsInN1YiI6Ik9iamVjdElEKFwiNjNmMjg3ZjRlYzdkMjc3N2RiYzE3YjRhXCIpIn0.zf2HRtdWQwGYzNP_cg-SKRSA1_N7voipzcw0FyggDD8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NzcyNjA4NzEsInN1YiI6Ik9iamVjdElEKFwiNjNmMjg3ZjRlYzdkMjc3N2RiYzE3YjRhXCIpIn0.jsKejCCRhRHCW6SMlBTF6pfIJNZkALjx6S74aD0_cgc
 
 {
   "name": "cash",
   "userId": "63f287f4ec7d2777dbc17b4a",
-  "sum": "500"
+  "sum": "0"
 }
 
 ###
+
+POST http://localhost:4321/api/v1/wallet/operation
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NzcyNjA4NzEsInN1YiI6Ik9iamVjdElEKFwiNjNmMjg3ZjRlYzdkMjc3N2RiYzE3YjRhXCIpIn0.jsKejCCRhRHCW6SMlBTF6pfIJNZkALjx6S74aD0_cgc
+
+{
+  "walletId": "63f8dd0b7970cbe2303344fe",
+  "income": true,
+  "description": "some test operation #2",
+  "sum": "100"
+}
 
 

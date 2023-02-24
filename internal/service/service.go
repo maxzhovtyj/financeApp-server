@@ -18,6 +18,7 @@ type Users interface {
 
 type Wallet interface {
 	New(ctx context.Context, wallet models.Wallet) error
+	NewOperation(ctx context.Context, operation models.Operation) error
 }
 
 type Service struct {
@@ -32,6 +33,6 @@ func New(
 	hashing hash.PasswordHashing) *Service {
 	return &Service{
 		Users:  NewUsersService(repo.Users, tokenManager, accessTokenTTL, refreshTokenTTL, hashing),
-		Wallet: NewWalletService(repo.Wallet, repo.Operation, repo.Transaction),
+		Wallet: NewWalletService(repo.Wallet),
 	}
 }

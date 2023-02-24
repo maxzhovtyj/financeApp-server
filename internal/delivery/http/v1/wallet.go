@@ -13,6 +13,8 @@ func (h *Handler) initWalletRoutes(group *echo.Group) {
 	wallet := group.Group(walletUrl, h.userIdentity)
 	{
 		wallet.POST("", h.newWallet)
+
+		wallet.POST("/operation", h.newOperation)
 	}
 }
 
@@ -44,6 +46,43 @@ func (h *Handler) newWallet(ctx echo.Context) error {
 		Name:   input.Name,
 		UserId: userOid,
 		Sum:    sumDecimal128,
+	})
+	if err != nil {
+		return newErrorResponse(ctx, http.StatusInternalServerError, err)
+	}
+
+	return nil
+}
+
+type NewOperationInput struct {
+	WalletId    string `json:"walletId" bson:"walletId" create:"required"`
+	Income      bool   `json:"income" bson:"income" create:"required"`
+	Sum         string `json:"sum" bson:"sum" create:"required"`
+	Description string `json:"description,omitempty" bson:"description"`
+}
+
+func (h *Handler) newOperation(ctx echo.Context) error {
+	var input NewOperationInput
+
+	if err := BindAndValidate(ctx, &input); err != nil {
+		return newErrorResponse(ctx, http.StatusBadRequest, models.ErrInvalidInputBody)
+	}
+
+	walletOid, err := primitive.ObjectIDFromHex(input.WalletId)
+	if err != nil {
+		return newErrorResponse(ctx, http.StatusBadRequest, models.ErrInvalidInputBody)
+	}
+
+	sumDecimal128, err := primitive.ParseDecimal128(input.Sum)
+	if err != nil {
+		return newErrorResponse(ctx, http.StatusBadRequest, models.ErrInvalidInputBody)
+	}
+
+	err = h.service.Wallet.NewOperation(ctx.Request().Context(), models.Operation{
+		Income:      input.Income,
+		WalletId:    walletOid,
+		Description: input.Description,
+		Sum:         sumDecimal128,
 	})
 	if err != nil {
 		return newErrorResponse(ctx, http.StatusInternalServerError, err)
