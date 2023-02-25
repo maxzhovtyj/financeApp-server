@@ -73,6 +73,10 @@ func (h *Handler) newOperation(ctx echo.Context) error {
 		return newErrorResponse(ctx, http.StatusBadRequest, models.ErrInvalidInputBody)
 	}
 
+	if input.Income == false {
+		input.Sum = "-" + input.Sum
+	}
+
 	sumDecimal128, err := primitive.ParseDecimal128(input.Sum)
 	if err != nil {
 		return newErrorResponse(ctx, http.StatusBadRequest, models.ErrInvalidInputBody)

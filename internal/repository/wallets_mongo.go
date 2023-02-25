@@ -46,16 +46,16 @@ func (r *WalletRepo) NewOperation(ctx context.Context, operation models.Operatio
 		return err
 	}
 
-	if operation.Income == true {
-		update := r.wallets.FindOneAndUpdate(
-			ctx,
-			bson.M{"_id": operation.WalletId}, bson.M{"$inc": bson.M{"sum": operation.Sum}},
-		)
-		if update.Err() != nil {
-			if err = session.AbortTransaction(ctx); err != nil {
-				return err
-			}
+	update := r.wallets.FindOneAndUpdate(
+		ctx, bson.M{"_id": operation.WalletId}, bson.M{"$inc": bson.M{"sum": operation.Sum}},
+	)
+
+	if update.Err() != nil {
+		if err = session.AbortTransaction(ctx); err != nil {
+			return err
 		}
+
+		return err
 	}
 
 	if err = session.CommitTransaction(ctx); err != nil {
