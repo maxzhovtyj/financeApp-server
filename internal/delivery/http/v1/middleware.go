@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/maxzhovtyj/financeApp-server/internal/models"
 	"net/http"
@@ -38,5 +39,13 @@ func (h *Handler) userIdentity(next echo.HandlerFunc) echo.HandlerFunc {
 
 		return next(ctx)
 	}
+}
 
+func getUserIdFromContext(ctx echo.Context) (string, error) {
+	userIdString, ok := ctx.Get(userIdCtx).(string)
+	if !ok {
+		return "", fmt.Errorf("failed to cast user id to string")
+	}
+
+	return userIdString, nil
 }
