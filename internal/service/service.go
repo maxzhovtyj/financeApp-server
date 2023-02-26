@@ -6,6 +6,7 @@ import (
 	"github.com/maxzhovtyj/financeApp-server/internal/repository"
 	"github.com/maxzhovtyj/financeApp-server/pkg/auth"
 	"github.com/maxzhovtyj/financeApp-server/pkg/hash"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 )
 
@@ -18,6 +19,7 @@ type Users interface {
 
 type Wallet interface {
 	New(ctx context.Context, wallet models.Wallet) error
+	GetAll(ctx context.Context, userOid primitive.ObjectID) ([]models.Wallet, error)
 	NewOperation(ctx context.Context, operation models.Operation) error
 }
 

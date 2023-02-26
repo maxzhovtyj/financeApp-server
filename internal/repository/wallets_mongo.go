@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/maxzhovtyj/financeApp-server/internal/models"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -18,6 +19,21 @@ func NewWalletRepo(db *mongo.Database) *WalletRepo {
 		wallets:    db.Collection(walletsCollection),
 		operations: db.Collection(operationsCollection),
 	}
+}
+
+func (r *WalletRepo) GetAllWallets(ctx context.Context, userOid primitive.ObjectID) ([]models.Wallet, error) {
+	var userWallets []models.Wallet
+
+	find, err := r.wallets.Find(ctx, bson.M{"userId": userOid})
+	if err != nil {
+		return nil, err
+	}
+
+	if err = find.All(ctx, &userWallets); err != nil {
+		return nil, err
+	}
+
+	return userWallets, nil
 }
 
 func (r *WalletRepo) Create(ctx context.Context, wallet models.Wallet) error {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/maxzhovtyj/financeApp-server/internal/models"
 	"github.com/maxzhovtyj/financeApp-server/internal/repository"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type WalletService struct {
@@ -14,6 +15,10 @@ func NewWalletService(walletsRepo repository.Wallet) *WalletService {
 	return &WalletService{
 		walletsRepo: walletsRepo,
 	}
+}
+
+func (w *WalletService) GetAll(ctx context.Context, userOid primitive.ObjectID) ([]models.Wallet, error) {
+	return w.walletsRepo.GetAllWallets(ctx, userOid)
 }
 
 func (w *WalletService) New(ctx context.Context, wallet models.Wallet) error {

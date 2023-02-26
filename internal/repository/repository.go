@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"github.com/maxzhovtyj/financeApp-server/internal/models"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -13,6 +14,7 @@ type Users interface {
 
 type Wallet interface {
 	Create(ctx context.Context, wallet models.Wallet) error
+	GetAllWallets(ctx context.Context, userOid primitive.ObjectID) ([]models.Wallet, error)
 	NewOperation(ctx context.Context, operation models.Operation) error
 }
 

@@ -12,6 +12,7 @@ const walletUrl = "/wallet"
 func (h *Handler) initWalletRoutes(group *echo.Group) {
 	wallet := group.Group(walletUrl, h.userIdentity)
 	{
+		wallet.GET("/all", h.getAllWallets)
 		wallet.POST("", h.newWallet)
 
 		wallet.POST("/operation", h.newOperation)
@@ -52,6 +53,25 @@ func (h *Handler) newWallet(ctx echo.Context) error {
 	}
 
 	return nil
+}
+
+func (h *Handler) getAllWallets(ctx echo.Context) error {
+	userId, err := getUserIdFromContext(ctx)
+	if err != nil {
+		return newErrorResponse(ctx, http.StatusBadRequest, models.ErrInvalidInputBody)
+	}
+
+	userOid, err := primitive.ObjectIDFromHex(userId)
+	if err != nil {
+		return newErrorResponse(ctx, http.StatusBadRequest, models.ErrInvalidInputBody)
+	}
+
+	wallets, err := h.service.Wallet.GetAll(ctx.Request().Context(), userOid)
+	if err != nil {
+		return newErrorResponse(ctx, http.StatusInternalServerError, err)
+	}
+
+	return ctx.JSON(http.StatusOK, wallets)
 }
 
 type NewOperationInput struct {
