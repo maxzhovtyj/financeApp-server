@@ -131,13 +131,13 @@ func TestHandler_signUp(t *testing.T) {
 
 			router := echo.New()
 
-			router.GET(usersSignUpUrl, handler.signUp)
+			router.GET(signUpUrl, handler.signUp)
 
 			v := validator.New()
 			router.Validator = &AppValidator{Validator: v}
 
 			w := httptest.NewRecorder()
-			r := httptest.NewRequest(http.MethodGet, usersSignUpUrl, bytes.NewBufferString(testCase.requestBody))
+			r := httptest.NewRequest(http.MethodGet, signUpUrl, bytes.NewBufferString(testCase.requestBody))
 			r.Header.Set("Content-Type", "application/json")
 			r.Header.Set("Accept", "application/json")
 
@@ -166,7 +166,7 @@ func TestHandler_signIn(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	accessToken, err := manager.NewJWT(primitive.NewObjectID().String(), time.Minute)
+	accessToken, err := manager.NewJWT(primitive.NewObjectID().Hex(), time.Minute)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -253,13 +253,13 @@ func TestHandler_signIn(t *testing.T) {
 
 			router := echo.New()
 
-			router.GET(usersSignUpUrl, handler.signIn)
+			router.GET(signUpUrl, handler.signIn)
 
 			v := validator.New()
 			router.Validator = &AppValidator{Validator: v}
 
 			w := httptest.NewRecorder()
-			r := httptest.NewRequest(http.MethodGet, usersSignUpUrl, bytes.NewBufferString(testCase.requestBody))
+			r := httptest.NewRequest(http.MethodGet, signUpUrl, bytes.NewBufferString(testCase.requestBody))
 			r.Header.Set("Content-Type", "application/json")
 			r.Header.Set("Accept", "application/json")
 

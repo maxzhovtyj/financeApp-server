@@ -67,7 +67,7 @@ func (s *UserService) SignIn(ctx context.Context, email, password string) (strin
 		return "", "", err
 	}
 
-	accessToken, err := s.tokenManager.NewJWT(user.Id.String(), s.accessTokenTTL)
+	accessToken, err := s.tokenManager.NewJWT(user.Id.Hex(), s.accessTokenTTL)
 	if err != nil {
 		return "", "", err
 	}
