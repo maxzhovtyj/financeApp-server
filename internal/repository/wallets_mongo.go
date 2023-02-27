@@ -36,6 +36,29 @@ func (r *WalletRepo) GetAllWallets(ctx context.Context, userOid primitive.Object
 	return userWallets, nil
 }
 
+func (r *WalletRepo) GetWallet(ctx context.Context, walletOid primitive.ObjectID) (models.Wallet, []models.Operation, error) {
+	var wallet models.Wallet
+
+	err := r.wallets.FindOne(ctx, bson.M{"_id": walletOid}).Decode(&wallet)
+	if err != nil {
+		return models.Wallet{}, nil, err
+	}
+
+	var walletOperations []models.Operation
+
+	find, err := r.operations.Find(ctx, bson.M{"walletId": walletOid})
+	if err != nil {
+		return models.Wallet{}, nil, err
+	}
+
+	err = find.All(ctx, &walletOperations)
+	if err != nil {
+		return models.Wallet{}, nil, err
+	}
+
+	return wallet, walletOperations, err
+}
+
 func (r *WalletRepo) Create(ctx context.Context, wallet models.Wallet) error {
 	if _, err := r.wallets.InsertOne(ctx, wallet); err != nil {
 		return err

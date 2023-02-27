@@ -21,6 +21,10 @@ func (w *WalletService) GetAll(ctx context.Context, userOid primitive.ObjectID) 
 	return w.walletsRepo.GetAllWallets(ctx, userOid)
 }
 
+func (w *WalletService) Get(ctx context.Context, walletOid primitive.ObjectID) (models.Wallet, []models.Operation, error) {
+	return w.walletsRepo.GetWallet(ctx, walletOid)
+}
+
 func (w *WalletService) New(ctx context.Context, wallet models.Wallet) error {
 	return w.walletsRepo.Create(ctx, wallet)
 }

@@ -20,6 +20,7 @@ type Users interface {
 type Wallet interface {
 	New(ctx context.Context, wallet models.Wallet) error
 	GetAll(ctx context.Context, userOid primitive.ObjectID) ([]models.Wallet, error)
+	Get(ctx context.Context, walletOid primitive.ObjectID) (models.Wallet, []models.Operation, error)
 	NewOperation(ctx context.Context, operation models.Operation) error
 }
 

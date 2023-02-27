@@ -38,6 +38,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2Nzc0MTk1M
 
 ###
 
+GET http://localhost:4321/api/v1/wallet?walletId=63f8dd0b7970cbe2303344fe
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2Nzc1MjMyNzAsInN1YiI6IjYzZjI4N2Y0ZWM3ZDI3NzdkYmMxN2I0YSJ9._3O8yn_9zA9zZgoIIOXpKK4lTQvnsQ8Jw_rPX7NanJM
+
+###
+
 POST http://localhost:4321/api/v1/wallet/operation
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NzczMzE1MDUsInN1YiI6Ik9iamVjdElEKFwiNjNmMjg3ZjRlYzdkMjc3N2RiYzE3YjRhXCIpIn0.YOb58XlYWZPaxrbOUfkkvCfkd4NSfL_B9dJuAZWD2P0
